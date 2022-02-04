@@ -35,7 +35,7 @@ public class DeliveryApplication {
 
         Payment payment= new Payment();
         payment.setPayment_id("bgf");
-        payment.setAccount(account.get());
+        payment.setAccount_id(account.get().getAccount_id());
         payment.setPayment_type(PaymentType.online);
         payment.setCredit_card("ccd");
         payment.setAmount(45);

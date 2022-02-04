@@ -14,8 +14,3 @@ public class Error {
     private String description;
 }
 
-enum ErrorType {
-    database,
-    network,
-    other
-}
