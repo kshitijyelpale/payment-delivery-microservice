@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="bin1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/ApiAndProducer/bin/app.jar!/" />
+      <root url="jar://$PROJECT_DIR$/ApiAndProducer/bin/producer.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
