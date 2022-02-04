@@ -7,3 +7,18 @@
 #      auto-offset-reset: earliest
 #      key-deserializer: org.apache.kafka.common.serialization.JsonDeserializer
 #      value-deserializer: org.apache.kafka.common.serialization.JsonDeserializer
+
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.PostgreSQL81Dialect
+  datasource:
+    url: jdbc:postgresql://localhost:5555/payments
+    username: tech
+    password: test

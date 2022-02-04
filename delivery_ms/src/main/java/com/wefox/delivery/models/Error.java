@@ -10,6 +10,12 @@ import lombok.NoArgsConstructor;
 public class Error {
 
     private String payment_id;
-    private String error;
+    private ErrorType error;
     private String description;
+}
+
+enum ErrorType {
+    database,
+    network,
+    other
 }
