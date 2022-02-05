@@ -69,11 +69,11 @@ services:
       - postgress
       - kafka-server
       
-  #delivery:
-    #build: ./delivery_ms
-    #ports:
-      #- 9001:8080
-    #networks:
-      #- kafka-net
+  delivery:
+    build: ./delivery_ms
+    ports:
+      - 9001:8080
+    networks:
+      - kafka-net
     
     

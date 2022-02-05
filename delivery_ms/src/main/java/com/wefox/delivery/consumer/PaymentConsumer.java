@@ -24,7 +24,6 @@ public class PaymentConsumer {
 
     @KafkaListener(topics = "online", groupId = "group_id")
     public void consumeOnlinePayment(String message) {
-        log.info("online message = " + message);
         var payment = getPaymentObject(message);
         assert payment != null;
         paymentService.validateOnlinePayment(payment);
@@ -32,7 +31,6 @@ public class PaymentConsumer {
 
     @KafkaListener(topics = "offline", groupId = "group_id")
     public void consumeOfflinePayment(String message) {
-        log.info("online message = " + message);
         var payment = getPaymentObject(message);
         paymentService.storePayment(payment);
     }
@@ -50,7 +48,7 @@ public class PaymentConsumer {
     }
 
     private String fetchPaymentId(String message) {
-        var pattern = "\"payment_id\"\s[:]\s(\".*\")";
+        var pattern = "\"payment_id\"[:]\s(\".*\")";
         var compiledPattern = Pattern.compile(pattern);
         var m = compiledPattern.matcher(message);
         return m.group(0);

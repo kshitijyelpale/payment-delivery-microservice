@@ -1,5 +1,7 @@
 package com.wefox.delivery.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wefox.delivery.models.Error;
 import com.wefox.delivery.models.ErrorType;
 import com.wefox.delivery.models.Payment;
@@ -7,16 +9,12 @@ import com.wefox.delivery.repositories.AccountRepository;
 import com.wefox.delivery.repositories.PaymentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.transaction.Transactional;
-import java.sql.SQLException;
 
 @Service
 @Slf4j
@@ -37,14 +35,15 @@ public class PaymentService {
     @Autowired
     private HttpHeaders httpHeaders;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @Async
     public void validateOnlinePayment(Payment payment) {
-        HttpEntity<String> request = new HttpEntity<>(payment.toString(), httpHeaders);
-
         try {
-            var response = restTemplate.postForObject(this.apiSystemUri + "/payment", request, ResponseEntity.class);
-            assert response != null;
-            if (HttpStatus.valueOf(response.getStatusCodeValue()).is2xxSuccessful()) {
+            HttpEntity<String> request = new HttpEntity<>(objectMapper.writeValueAsString(payment), httpHeaders);
+            var response = restTemplate.exchange(this.apiSystemUri + "/payment", HttpMethod.POST, request, ResponseEntity.class);
+            if (response.getStatusCode().is2xxSuccessful()) {
                 this.storePayment(payment);
             }
             else {
@@ -53,12 +52,16 @@ public class PaymentService {
                 sendErrorToLogSystem(error);
             }
         }
+        catch(JsonProcessingException e) {
+            var error = new Error(payment.getPayment_id(), ErrorType.other, e.getMessage());
+            log.error(error.toString());
+            sendErrorToLogSystem(error);
+        }
         catch (Exception e) {
             var error = new Error(payment.getPayment_id(), ErrorType.network, e.getMessage());
             log.error(error.toString());
             sendErrorToLogSystem(error);
         }
-
     }
 
     @Transactional
@@ -84,8 +87,13 @@ public class PaymentService {
 
     @Async
     public void sendErrorToLogSystem(Error error) {
-        HttpEntity<String> request = new HttpEntity<>(error.toString(), httpHeaders);
+        try {
+            HttpEntity<String> request = new HttpEntity<>(objectMapper.writeValueAsString(error), httpHeaders);
 
-        restTemplate.postForObject(this.apiSystemUri + "/log", request, String.class);
+            restTemplate.exchange(this.apiSystemUri + "/log", HttpMethod.POST, request, String.class);
+        }
+        catch (Exception e) {
+            log.error(e.getMessage());
+        }
     }
 }
