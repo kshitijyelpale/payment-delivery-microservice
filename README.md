@@ -48,6 +48,8 @@ class such as mentioned here at https://www.baeldung.com/exception-handling-for-
 
 4. handle appearance of Enums in table as `text` instead of `number`
 
+5. added the test cases to expect some exceptions like database and network. 
+
 
 ## Last note.
 
